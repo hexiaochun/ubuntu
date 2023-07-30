@@ -1,19 +1,18 @@
-FROM debian
-RUN apt update
-RUN DEBIAN_FRONTEND=noninteractive apt install qemu-kvm *zenhei* xz-utils dbus-x11 curl firefox-esr gnome-system-monitor mate-system-monitor  git xfce4 xfce4-terminal tightvncserver wget   -y
-RUN wget https://github.com/novnc/noVNC/archive/refs/tags/v1.2.0.tar.gz
-RUN curl -LO https://proot.gitlab.io/proot/bin/proot
-RUN chmod 755 proot
-RUN mv proot /bin
-RUN tar -xvf v1.2.0.tar.gz
-RUN mkdir  $HOME/.vnc
-RUN echo 'luo' | vncpasswd -f > $HOME/.vnc/passwd
-RUN chmod 600 $HOME/.vnc/passwd
-RUN echo 'whoami ' >>/luo.sh
-RUN echo 'cd ' >>/luo.sh
-RUN echo "su -l -c  'vncserver :2000 -geometry 1280x800' "  >>/luo.sh
-RUN echo 'cd /noVNC-1.2.0' >>/luo.sh
-RUN echo './utils/launch.sh  --vnc localhost:7900 --listen 8900 ' >>/luo.sh
-RUN chmod 755 /luo.sh
-EXPOSE 8900
-CMD  /luo.sh
+# 使用 Ubuntu 20.04 作为基础镜像
+FROM ubuntu:20.04
+
+# 避免时区选择交互式问题
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 更新 Ubuntu 的软件包列表
+RUN apt-get update
+
+# 安装 Python 和 pip
+RUN apt-get install -y python3 python3-pip
+
+# 设置 Python 3 为默认
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+RUN update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+
+# 创建一个工作目录
+WORKDIR /app
